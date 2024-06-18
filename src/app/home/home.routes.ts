@@ -1,20 +1,22 @@
 import { Routes } from '@angular/router';
-import { AuthComponent } from './auth.component';
+import { HomeComponent } from './home.component';
 
-export const authRoutes: Routes = [
+export const homeRoutes: Routes = [
   {
     path: '',
-    component: AuthComponent,
+    component: HomeComponent,
     children: [
       {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
       {
-        path: 'login',
+        path: 'dashboard',
         loadComponent: () =>
-          import('./login/login.component').then((m) => m.LoginComponent),
+          import('./dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ),
       },
     ],
   },

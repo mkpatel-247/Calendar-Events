@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from 'src/shared/guards/auth.guard';
+import { authGuard } from 'src/app/shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -12,17 +12,14 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
   },
   {
-    path: 'dashboard',
+    path: 'home',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./home/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent
-      ),
+    loadChildren: () => import('./home/home.routes').then((m) => m.homeRoutes),
   },
   {
     path: 'error404',
     loadComponent: () =>
-      import('../shared/components/error404/error404.component').then(
+      import('./shared/components/error404/error404.component').then(
         (m) => m.Error404Component
       ),
   },
