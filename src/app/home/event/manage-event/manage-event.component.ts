@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  Input,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -34,9 +35,17 @@ import { EVENT } from 'src/app/shared/constant/keys.constant';
 export class ManageEventComponent implements OnInit {
   eventForm!: FormGroup;
   allEvent: any = '';
+  isSubmitted: boolean = false;
 
+  @Input() data = '';
+  @Input() date: any = '';
   ngOnInit(): void {
     this.initializeEventForm();
+
+    if (this.date) {
+      this.eventForm.get('timing')?.get('startDateTime')?.setValue(this.date);
+      // console.log(this.eventForm.get('timing')?.get('startDateTime').value);
+    }
     //Get event object from localStorage.
     this.allEvent = getLocalStorage(EVENT);
   }
@@ -46,14 +55,14 @@ export class ManageEventComponent implements OnInit {
     private fb: FormBuilder,
     public offcanvas: NgbOffcanvas,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   /**
    * Create Event Form controls
    */
   initializeEventForm() {
     this.eventForm = this.fb.group({
-      id: new FormControl(''),
+      id: new FormControl(''), //Hidden field
       title: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
       timing: new FormGroup({
@@ -62,10 +71,36 @@ export class ManageEventComponent implements OnInit {
       }),
       address: new FormGroup({
         city: new FormControl('', [Validators.required]),
-        pinCode: new FormControl('', [Validators.required]),
+        area: new FormControl('', [Validators.required]),
       }),
-      image: new FormControl('', [Validators.required]),
+      image: new FormControl(null, [Validators.required]),
     });
+  }
+
+  /**
+   * Get easy access of controls in HTML file.
+   */
+  get fc() {
+    return this.eventForm.controls;
+  }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    console.log(event.target.files);
+
+    if (file) {
+      const reader = new FileReader();
+      // this.cdr.detach();
+      reader.onload = (e: any) => {
+        const imageBase64 = e.target?.result as string;
+        console.log(imageBase64);
+        this.eventForm.value.image = imageBase64;
+        // this.eventForm.patchValue({ image: imageBase64 });
+        // localStorage.setItem('uploadedImage', imageBase64);
+        // this.cdr.markForCheck();
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   /**
@@ -76,10 +111,14 @@ export class ManageEventComponent implements OnInit {
     if (this.eventForm.valid) {
       //Store unique key and update value on id field
       value.id = this.generateUniqueEventId();
+
       this.allEvent.push(value);
+      //Set into localStorage.
       setLocalStorage(EVENT, this.allEvent);
+      this.modal.close();
     }
-    this.eventForm.markAllAsTouched();
+    this.isSubmitted = true;
+    this.cdr.detectChanges();
   }
 
   /**

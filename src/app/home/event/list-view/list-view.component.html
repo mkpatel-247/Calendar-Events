@@ -29,14 +29,14 @@
                     <td>{{ item.image }}</td>
                     <td>{{ item.title }}</td>
                     <td>{{ item.description }}</td>
-                    <td>{{ item.timing.startDateTime }}</td>
-                    <td>{{ item.timing.endDateTime }}</td>
+                    <td>{{ item.timing.startDateTime| date : 'medium' }}</td>
+                    <td>{{ item.timing.endDateTime | date : 'medium'}}</td>
                     <td>
                         <i class="bi bi-geo-alt-fill"></i>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-warning">
-                            Edit
+                        <button class="btn btn-sm btn-outline-info">
+                            View
                         </button>
                     </td>
                 </tr>

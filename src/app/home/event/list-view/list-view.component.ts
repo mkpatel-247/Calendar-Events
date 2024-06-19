@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManageEventComponent } from '../manage-event/manage-event.component';
@@ -16,17 +16,24 @@ import { EVENT } from 'src/app/shared/constant/keys.constant';
 })
 export class ListViewComponent implements OnInit {
   eventList: IEvent[] = [];
-
+  private modalService = inject(NgbModal);
   ngOnInit(): void {
     this.eventList = getLocalStorage(EVENT);
   }
 
-  constructor(public modal: NgbModal) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
   /**
    * Open Modal to add event
    */
   addEvent() {
-    this.modal.open(ManageEventComponent);
+    const modalRef = this.modalService.open(ManageEventComponent);
+    // modalRef.componentInstance.data = "Test";
+    this.modalService.activeInstances.subscribe({
+      next: (response: any) => {
+        this.eventList = getLocalStorage(EVENT);
+        this.cdr.detectChanges();
+      }
+    })
   }
 }

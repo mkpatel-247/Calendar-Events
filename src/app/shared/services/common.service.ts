@@ -1,4 +1,6 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { getLocalStorage } from '../common/function';
+import { EVENT } from '../constant/keys.constant';
 
 @Injectable({
   providedIn: 'root'
