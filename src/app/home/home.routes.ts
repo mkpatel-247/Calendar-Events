@@ -17,11 +17,29 @@ export const homeRoutes: Routes = [
           import('./dashboard/dashboard.component').then(
             (m) => m.DashboardComponent
           ),
+        data: [
+          {
+            pageTitle: 'Dashboard',
+            linkList: [
+              { label: 'Home', link: '/home' },
+              { label: 'Dashboard', link: '/home/dashboard' },
+            ],
+          },
+        ],
       },
       {
         path: 'event',
         loadComponent: () =>
           import('./event/event.component').then((m) => m.EventComponent),
+        data: [
+          {
+            pageTitle: 'Event',
+            linkList: [
+              { label: 'Home', link: '/home' },
+              { label: 'Event', link: '/home/event' },
+            ],
+          },
+        ],
       },
     ],
   },

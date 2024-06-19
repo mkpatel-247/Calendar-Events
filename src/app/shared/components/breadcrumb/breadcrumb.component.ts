@@ -6,8 +6,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss']
+  styleUrls: ['./breadcrumb.component.scss'],
 })
-export class BreadcrumbComponent {
-
-}
+export class BreadcrumbComponent {}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthComponent } from '../../auth/auth.component';
 import { RouterOutlet } from '@angular/router';
@@ -9,5 +9,6 @@ import { RouterOutlet } from '@angular/router';
   imports: [CommonModule, AuthComponent, RouterOutlet],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { getLocalStorage } from '../shared/common/function';
@@ -10,6 +10,7 @@ import { TOKEN } from '../shared/constant/keys.constant';
   imports: [CommonModule, RouterOutlet],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthComponent implements OnInit {
   //Check if token is there redirect to home route.
