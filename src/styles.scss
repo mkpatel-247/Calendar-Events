@@ -1229,3 +1229,17 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+.theme-color-button {
+  color: #4154f1;
+  border: 1px solid #4154f1;
+}
+
+.theme-color-button:hover {
+  background-color: #4154f1;
+  border: 1px solid white;
+  color: white;
+}
+
+/* Importing Bootstrap SCSS file. */
+// @import 'bootstrap/scss/bootstrap';

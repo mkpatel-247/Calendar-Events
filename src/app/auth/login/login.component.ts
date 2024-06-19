@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -38,7 +43,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -67,6 +73,7 @@ export class LoginComponent implements OnInit {
         },
         error: (err: any) => {
           this.loginFailed = true;
+          this.cdr.detectChanges();
         },
       });
     }

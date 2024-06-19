@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Router } from '@angular/router';
@@ -14,7 +14,14 @@ import { TOKEN } from '../../constant/keys.constant';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  constructor(private router: Router, private http: HttpService) {}
+  //Sidebar
+  sidebarShow: boolean = true;
+
+  constructor(
+    private router: Router,
+    private http: HttpService,
+    private render: Renderer2
+  ) {}
 
   /**
    * Remove Token from localStorage and make the user logout from website.
@@ -26,5 +33,18 @@ export class HeaderComponent {
         this.router.navigateByUrl('/');
       },
     });
+  }
+
+  /**
+   * Toggle Sidebar.
+   */
+  sidebarToggle() {
+    if (this.sidebarShow) {
+      this.render.addClass(document.body, 'toggle-sidebar');
+      this.sidebarShow = false;
+    } else {
+      this.render.removeClass(document.body, 'toggle-sidebar');
+      this.sidebarShow = true;
+    }
   }
 }
