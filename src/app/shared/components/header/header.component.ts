@@ -4,6 +4,7 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Router } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { TOKEN } from '../../constant/keys.constant';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-header',
@@ -20,8 +21,8 @@ export class HeaderComponent {
   constructor(
     private router: Router,
     private http: HttpService,
-    private render: Renderer2
-  ) {}
+    private common: CommonService
+  ) { }
 
   /**
    * Remove Token from localStorage and make the user logout from website.
@@ -40,10 +41,10 @@ export class HeaderComponent {
    */
   sidebarToggle() {
     if (this.sidebarShow) {
-      this.render.addClass(document.body, 'toggle-sidebar');
+      this.common.addClassInBody('toggle-sidebar');
       this.sidebarShow = false;
     } else {
-      this.render.removeClass(document.body, 'toggle-sidebar');
+      this.common.removeClassInBody('toggle-sidebar');
       this.sidebarShow = true;
     }
   }
