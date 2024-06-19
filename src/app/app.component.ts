@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { getLocalStorage, setLocalStorage } from './shared/common/function';
+import { EVENT } from './shared/constant/keys.constant';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,10 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'calendar-events';
+
+  ngOnInit(): void {
+    if (!getLocalStorage(EVENT)) setLocalStorage(EVENT, []);
+  }
 }

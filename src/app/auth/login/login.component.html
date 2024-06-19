@@ -9,7 +9,7 @@
                             <img src="assets/img/logo.png" alt="">
                             <span class="d-none d-lg-block">NiceAdmin</span>
                         </a>
-                    </div><!-- End Logo -->
+                    </div>
 
                     <div class="card mb-3">
 
@@ -17,51 +17,54 @@
 
                             <div class="pt-4 pb-2">
                                 <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                                <p class="text-center small">Enter your username & password to login</p>
+                                <p class="text-center text-danger" *ngIf="loginFailed">Invalid Credentials</p>
                             </div>
 
-                            <form class="row g-3 needs-validation" novalidate>
+                            <form class="row g-3" [formGroup]="loginForm" (ngSubmit)="checkCredentials()">
 
                                 <div class="col-12">
                                     <label for="yourUsername" class="form-label">Username</label>
-                                    <div class="input-group has-validation">
-                                        <span class="input-group-text" id="inputGroupPrepend">@</span>
-                                        <input type="text" name="username" class="form-control" id="yourUsername"
-                                            required>
-                                        <div class="invalid-feedback">Please enter your username.</div>
-                                    </div>
+
+                                    <input type="text" name="username" class="form-control" id="yourUsername"
+                                        placeholder="Enter your email" formControlName="email"
+                                        [ngClass]="{'border-danger': isSubmitted && loginForm.get('email')?.invalid}">
+                                    <span class="text-danger"
+                                        *ngIf="isSubmitted && loginForm.get('email')?.hasError('required')">
+                                        Please enter your username.
+                                    </span>
+                                    <span class="text-danger"
+                                        *ngIf="!loginForm.get('email')?.hasError('required') &&loginForm.get('email')?.hasError('email')">
+                                        Enter a valid email address.
+                                    </span>
                                 </div>
 
                                 <div class="col-12 mb-2">
                                     <label for="yourPassword" class="form-label">Password</label>
-                                    <input type="password" name="password" class="form-control" id="yourPassword"
-                                        required>
-                                    <div class="invalid-feedback">Please enter your password!</div>
+                                    <div class="input-group">
+
+                                        <input type="{{showPassword ? 'text' : 'password'}}" name="password"
+                                            class="form-control" id="yourPassword" formControlName="password"
+                                            placeholder="Enter your password"
+                                            [ngClass]="{'border-danger':isSubmitted && loginForm.get('password')?.invalid}">
+
+                                        <span class="input-group-text" (click)="togglePassword()">
+                                            <i class="bi bi-{{showPassword ? 'eye-slash' : 'eye'}}"></i>
+                                        </span>
+
+                                    </div>
+                                    <span class="text-danger" *ngIf="isSubmitted && loginForm.get('password')?.invalid">
+                                        Please enter your password!
+                                    </span>
                                 </div>
 
-                                <!-- <div class="col-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="remember" value="true"
-                                            id="rememberMe">
-                                        <label class="form-check-label" for="rememberMe">Remember me</label>
-                                    </div>
-                                </div> -->
                                 <div class="col-12">
                                     <button class="btn btn-primary w-100" type="submit">Login</button>
                                 </div>
                             </form>
-
                         </div>
                     </div>
-
-                    <div class="credits">
-                        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-                    </div>
-
                 </div>
             </div>
         </div>
-
     </section>
-
 </div>

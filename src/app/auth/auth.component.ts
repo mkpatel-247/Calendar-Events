@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
+import { getLocalStorage } from '../shared/common/function';
+import { TOKEN } from '../shared/constant/keys.constant';
 
 @Component({
   selector: 'app-auth',
@@ -9,4 +11,11 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent {}
+export class AuthComponent implements OnInit {
+  //Check if token is there redirect to home route.
+  ngOnInit(): void {
+    if (getLocalStorage(TOKEN)) this.router.navigateByUrl('/home');
+  }
+
+  constructor(private router: Router) {}
+}

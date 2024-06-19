@@ -18,6 +18,11 @@ export const homeRoutes: Routes = [
             (m) => m.DashboardComponent
           ),
       },
+      {
+        path: 'event',
+        loadComponent: () =>
+          import('./event/event.component').then((m) => m.EventComponent),
+      },
     ],
   },
   {

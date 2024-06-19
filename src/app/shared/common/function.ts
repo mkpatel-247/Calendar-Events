@@ -1,15 +1,18 @@
 /**
- * Return token from localStorage.
- * @returns token
+ * Get data from localStorage.
+ * @param key name of object that you have to fetch from localStorage.
+ * @returns value or null.
  */
-export function getToken() {
-  const token = localStorage.getItem("authToken");
-  return token ? JSON.parse(token) : null;
+export function getLocalStorage(key: string) {
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : null;
 }
 
 /**
- * Set authToken in localStorage.
+ * Set data into LocalStorage.
+ * @param key name of object that you want to set.
+ * @param value value that you have to set in LocalStorage.
  */
-export function setToken(token: any) {
-  localStorage.setItem("authToken", JSON.stringify(token));
+export function setLocalStorage(key: string, value: any) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
