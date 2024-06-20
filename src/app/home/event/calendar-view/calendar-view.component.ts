@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
   inject,
 } from '@angular/core';
@@ -19,8 +20,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { ManageEventComponent } from '../manage-event/manage-event.component';
-import { getEvents } from 'src/app/shared/common/function';
+import { findObjectNIndex, formatDateTime, getEvents } from 'src/app/shared/common/function';
 import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { CommonService } from 'src/app/shared/services/common.service';
+import { Subscription } from 'rxjs';
+import { L } from '@fullcalendar/list/internal-common';
+import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-calendar-view',
@@ -30,18 +35,33 @@ import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./calendar-view.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CalendarViewComponent implements OnInit {
+export class CalendarViewComponent implements OnInit, OnDestroy {
   //Modal for Add Event.
   private modalService = inject(NgbModal);
   //Modal of Edit Event.
   private offCanvasService = inject(NgbOffcanvas);
+  //Store all subscribe of this component.
+  subscribed: Subscription[] = [];
 
   ngOnInit(): void {
     //Fetch events to show in view.
-    this.calendarOptions.events = getEvents();
+    const sub = this.common.updateEvent$.subscribe({
+      next: () => {
+        this.calendarOptions.events = getEvents();
+        this.cdr.detectChanges();
+      }
+    });
+    this.subscribed.push(sub);
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  ngOnDestroy(): void {
+    // Unsubscribe all the subscription.
+    this.subscribed.forEach((element: Subscription) => {
+      return element.unsubscribe();
+    })
+  }
+
+  constructor(private cdr: ChangeDetectorRef, private common: CommonService) { }
 
   /**
    * FullCalendar Plugin setup.
@@ -62,28 +82,15 @@ export class CalendarViewComponent implements OnInit {
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    // eventsSet: this.handleEvents.bind(this),
   };
-  currentEvents: EventApi[] = [];
 
   /**
    * Trigger onClick date.
    * @param selectInfo clicked date.
    */
   handleDateSelect(selectInfo: DateSelectArg) {
-    // const title = prompt('Please enter a new title for your event');
     const addModalRef = this.modalService.open(ManageEventComponent);
-
-    addModalRef.componentInstance.date = this.formatDateTime(selectInfo.start);
-    addModalRef.dismissed.subscribe({
-      next: (response: any) => {
-        this.calendarOptions.events = getEvents();
-        this.cdr.detectChanges();
-      },
-    });
-    const calendarApi = selectInfo.view.calendar;
-
-    // calendarApi.unselect(); // clear date selection
+    addModalRef.componentInstance.date = formatDateTime(selectInfo.start);
   }
 
   /**
@@ -91,28 +98,9 @@ export class CalendarViewComponent implements OnInit {
    * @param clickInfo event
    */
   handleEventClick(clickInfo: EventClickArg) {
-    const ref = this.offCanvasService.open(ManageEventComponent, {
-      position: 'end',
-    });
-    ref.componentInstance.id = clickInfo.event.id;
-    ref.dismissed.subscribe({
-      next: () => {
-        this.calendarOptions.events = getEvents();
-        this.cdr.detectChanges();
-      },
-    });
+    const ID = Number(clickInfo.event.id);
+    const viewModalRef = this.modalService.open(ModalComponent, { size: 'md', centered: true });
+    viewModalRef.componentInstance.eventDetails = findObjectNIndex(ID).object;
   }
 
-  // handleEvents(events: EventApi[]) {
-  //   // this.currentEvents = events;
-  //   // this.cdr.detectChanges();
-  // }
-
-  /**
-   * Format Date according to dateTimeLocal format.
-   * Example of formatted date: 2024-06-08T04:23
-   */
-  formatDateTime(calendarDate: Date) {
-    return calendarDate.toISOString().slice(0, 21);
-  }
 }

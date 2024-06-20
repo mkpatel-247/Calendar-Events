@@ -24,13 +24,12 @@ export function setLocalStorage(key: string, value: any) {
  * @returns formatted object as per fullCalender plugin
  */
 export function getEvents() {
-  const allEvents = getLocalStorage(EVENT);
-  return allEvents.map((e: any) => {
+  return getLocalStorage(EVENT).map((e: any) => {
     return {
       id: e.id,
       title: e.title,
-      start: e.timing.startDateTime,
-      end: e.timing.endDateTime,
+      start: e.timing.start,
+      end: e.timing.end,
     };
   });
 }
@@ -40,7 +39,7 @@ export function getEvents() {
  * @param eventId Unique ID of event.
  * @returns index location.
  */
-export function findEventIndex(eventId: number) {
+export function findObjectNIndex(eventId: number) {
   const index = getLocalStorage(EVENT).findIndex((element: any) => {
     return element.id == eventId;
   });
@@ -48,4 +47,12 @@ export function findEventIndex(eventId: number) {
     return element.id == eventId;
   });
   return { object: object, index: index };
+}
+
+/**
+   * Format Date according to dateTimeLocal format.
+   * Example of formatted date: 2024-06-08T04:23
+   */
+export function formatDateTime(calendarDate: Date) {
+  return calendarDate.toISOString().slice(0, 21);
 }

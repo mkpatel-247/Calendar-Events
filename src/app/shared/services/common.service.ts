@@ -1,11 +1,14 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { getLocalStorage } from '../common/function';
 import { EVENT } from '../constant/keys.constant';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommonService {
+
+  updateEvent$ = new BehaviorSubject('');
 
   private render!: Renderer2;
   private body!: HTMLElement;

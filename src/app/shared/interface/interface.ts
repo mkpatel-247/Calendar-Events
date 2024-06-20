@@ -8,6 +8,6 @@ export interface IEvent {
 }
 
 interface ITiming {
-  startDateTime: string;
-  endDateTime: string;
+  start: string;
+  end: string;
 }

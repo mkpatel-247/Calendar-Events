@@ -1,10 +1,8 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { IEvent } from '../../interface/interface';
 import { ManageEventComponent } from 'src/app/home/event/manage-event/manage-event.component';
-import { HeaderComponent } from '../header/header.component';
-import { Error404Component } from '../error404/error404.component';
 
 @Component({
   selector: 'app-modal',
@@ -14,7 +12,7 @@ import { Error404Component } from '../error404/error404.component';
   styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent {
-  // private modalService = inject(NgbModal);
+  public modalService = inject(NgbModal);
   private offCanvasService = inject(NgbOffcanvas);
 
   @Input() eventDetails: IEvent = {
@@ -22,14 +20,25 @@ export class ModalComponent {
     title: '',
     description: '',
     image: '',
-    timing: { startDateTime: '', endDateTime: '' },
+    timing: { start: '', end: '' },
     address: undefined,
   };
 
   openEditForm() {
-    const ref = this.offCanvasService.open(Error404Component, {
+    const ref = this.offCanvasService.open(ManageEventComponent, {
       position: 'end',
+      animation: true,
+      backdrop: true
     });
     ref.componentInstance.id = this.eventDetails.id;
+    // Close the modal view.
+    this.modalService.dismissAll();
+    // When offcanvas is dismissed then subscribe and get the value.
+    ref.dismissed.subscribe({
+      next: (response: any) => {
+        const modalRef = this.modalService.open(ModalComponent);
+        modalRef.componentInstance.eventDetails = response || this.eventDetails;
+      }
+    })
   }
 }

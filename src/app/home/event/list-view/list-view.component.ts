@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
   inject,
 } from '@angular/core';
@@ -12,6 +13,8 @@ import { IEvent } from 'src/app/shared/interface/interface';
 import { getLocalStorage } from 'src/app/shared/common/function';
 import { EVENT } from 'src/app/shared/constant/keys.constant';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
+import { CommonService } from 'src/app/shared/services/common.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list-view',
@@ -21,34 +24,42 @@ import { ModalComponent } from 'src/app/shared/components/modal/modal.component'
   styleUrls: ['./list-view.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListViewComponent implements OnInit {
+export class ListViewComponent implements OnInit, OnDestroy {
   eventList: IEvent[] = [];
   private modalService = inject(NgbModal);
+  //Store all subscription.
+  subscribed: Subscription[] = [];
   ngOnInit(): void {
-    this.eventList = getLocalStorage(EVENT);
+    //Get event list from local storage.
+    const sub = this.common.updateEvent$.subscribe({
+      next: () => {
+        this.eventList = getLocalStorage(EVENT);
+        this.cdr.detectChanges();
+      },
+    })
+    this.subscribed.push(sub);
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  ngOnDestroy(): void {
+    this.subscribed.forEach((element: Subscription) => {
+      return element.unsubscribe();
+    })
+  }
+  constructor(private cdr: ChangeDetectorRef, private common: CommonService) {
+  }
 
   /**
    * Open Modal to add event
    */
   addEvent() {
     this.modalService.open(ManageEventComponent);
-    //Subscribe and detect any changes.
-    this.modalService.activeInstances.subscribe({
-      next: (response: any) => {
-        this.eventList = getLocalStorage(EVENT);
-        this.cdr.detectChanges();
-      },
-    });
   }
 
   /**
    * View event details in a modal.
    */
   viewEventDetails(event: IEvent) {
-    const viewModalRef = this.modalService.open(ModalComponent);
+    const viewModalRef = this.modalService.open(ModalComponent, { size: 'lg', centered: true });
     viewModalRef.componentInstance.eventDetails = event;
   }
 }

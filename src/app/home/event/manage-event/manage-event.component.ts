@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -15,11 +16,13 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  findEventIndex,
+  findObjectNIndex,
   getLocalStorage,
   setLocalStorage,
 } from 'src/app/shared/common/function';
 import { EVENT } from 'src/app/shared/constant/keys.constant';
+import { dateRangeValidator } from 'src/app/shared/common/validations';
+import { CommonService } from 'src/app/shared/services/common.service';
 
 @Component({
   selector: 'app-manage-event',
@@ -36,6 +39,7 @@ export class ManageEventComponent implements OnInit {
 
   @Input() id = 0;
   @Input() editObject: any = '';
+  //Date value from calendarView.
   @Input() date: any = '';
   profileImage: string | ArrayBuffer | undefined | null;
 
@@ -43,15 +47,12 @@ export class ManageEventComponent implements OnInit {
     this.initializeEventForm();
 
     if (this.id) {
-      this.editObject = findEventIndex(this.id);
+      this.editObject = findObjectNIndex(this.id);
       this.eventForm.patchValue(this.editObject.object);
       this.profileImage = this.editObject.object.image;
-      console.log('iausgduig');
     }
     if (this.date) {
-      console.log('Formatted Date: ', this.date);
-
-      this.eventForm.get('timing')?.get('startDateTime')?.setValue(this.date);
+      this.eventForm.get('timing')?.get('start')?.setValue(this.date);
     }
     //Get event object from localStorage.
     this.allEvent = getLocalStorage(EVENT);
@@ -61,8 +62,9 @@ export class ManageEventComponent implements OnInit {
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     public offcanvas: NgbOffcanvas,
-    public modal: NgbModal
-  ) {}
+    public modal: NgbModal,
+    private common: CommonService
+  ) { }
 
   /**
    * Create Event Form controls
@@ -73,9 +75,9 @@ export class ManageEventComponent implements OnInit {
       title: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
       timing: new FormGroup({
-        startDateTime: new FormControl('', [Validators.required]),
-        endDateTime: new FormControl('', [Validators.required]),
-      }),
+        start: new FormControl('', [Validators.required]),
+        end: new FormControl('', [Validators.required]),
+      }, { validators: dateRangeValidator('start', 'end') }),
       address: new FormGroup({
         city: new FormControl('', [Validators.required]),
         area: new FormControl('', [Validators.required]),
@@ -117,17 +119,18 @@ export class ManageEventComponent implements OnInit {
         value.image = this.profileImage;
         this.allEvent[this.editObject.index] = value;
       } else {
-        //Store unique key and update value on id field
-        value.id = this.generateUniqueEventId();
+        value.id = this.generateUniqueEventId(); //Generate unique ID.
         value.image = this.profileImage;
         this.allEvent.push(value);
       }
       //Set into localStorage.
       setLocalStorage(EVENT, this.allEvent);
+      //Emit subject
+      this.common.updateEvent$.next(this.allEvent);
       this.profileImage = '';
       this.eventForm.reset();
       //Close component.
-      this.id ? this.offcanvas.dismiss() : this.modal.dismissAll();
+      this.id ? this.offcanvas.dismiss(value) : this.modal.dismissAll();
     } else {
       this.isSubmitted = true;
     }
