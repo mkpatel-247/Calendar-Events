@@ -54,6 +54,7 @@ export class CalendarViewComponent implements OnInit {
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
     initialView: 'dayGridMonth',
+    eventColor: '#4154f1',
     timeZone: 'UTC',
     weekends: true,
     selectable: true,

@@ -3,20 +3,20 @@
         <div class="col-lg-12">
             <div class="card shadow-none my-0 rounded-0 rounded-top-2">
                 <div class="card-body mt-3 pb-2">
-                    <div class="d-flex justify-content-around">
-                        <div class="me-auto">
-                            <h5>
+                    <div class="d-flex flex-row justify-content-around">
+                        <div class="me-auto fs-5">
+                            <b>
                                 <i class="bi bi-{{ viewMode ? 'calendar2-week' : 'list' }}"></i>
 
                                 {{ viewMode ? 'Calendar' : 'List' }}
-                            </h5>
+                            </b>
                         </div>
-                        <div>
+                        <div class="fs-5">
                             <label class="form-check-label me-2" for="flexSwitchCheckDefault">
                                 {{ viewMode ? 'Calendar' : 'List' }}
                             </label>
                         </div>
-                        <div class="form-check form-switch fs-6">
+                        <div class="form-check form-switch fs-5">
                             <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
                                 (click)="toggleViewButton()">
                         </div>
