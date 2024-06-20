@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Inject,
   OnInit,
   inject,
 } from '@angular/core';
@@ -13,36 +12,40 @@ import {
   DateSelectArg,
   EventApi,
   EventClickArg,
-  EventInput,
+  formatDate,
 } from '@fullcalendar/core';
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { ManageEventComponent } from '../manage-event/manage-event.component';
-import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { getEvents } from 'src/app/shared/common/function';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-calendar-view',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule],
+  imports: [CommonModule, FullCalendarModule, NgbModule],
   templateUrl: './calendar-view.component.html',
   styleUrls: ['./calendar-view.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalendarViewComponent implements OnInit {
-
+  //Modal for Add Event.
   private modalService = inject(NgbModal);
+  //Modal of Edit Event.
+  private offCanvasService = inject(NgbOffcanvas);
 
   ngOnInit(): void {
     //Fetch events to show in view.
     this.calendarOptions.events = getEvents();
   }
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef) {}
 
+  /**
+   * FullCalendar Plugin setup.
+   */
   calendarOptions: CalendarOptions = {
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
@@ -51,50 +54,64 @@ export class CalendarViewComponent implements OnInit {
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
     initialView: 'dayGridMonth',
+    timeZone: 'UTC',
     weekends: true,
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this),
+    // eventsSet: this.handleEvents.bind(this),
   };
   currentEvents: EventApi[] = [];
 
+  /**
+   * Trigger onClick date.
+   * @param selectInfo clicked date.
+   */
   handleDateSelect(selectInfo: DateSelectArg) {
     // const title = prompt('Please enter a new title for your event');
     const addModalRef = this.modalService.open(ManageEventComponent);
-    addModalRef.componentInstance.date = selectInfo.startStr;
 
-    const title = 'asd';
+    addModalRef.componentInstance.date = this.formatDateTime(selectInfo.start);
+    addModalRef.dismissed.subscribe({
+      next: (response: any) => {
+        this.calendarOptions.events = getEvents();
+        this.cdr.detectChanges();
+      },
+    });
     const calendarApi = selectInfo.view.calendar;
-    console.log(calendarApi);
 
-    calendarApi.unselect(); // clear date selection
-
-    if (title) {
-      // calendarApi.addEvent({
-      //   id: '1',
-      //   title,
-      //   start: selectInfo.startStr,
-      //   end: selectInfo.endStr,
-      //   allDay: selectInfo.allDay,
-      // });
-    }
+    // calendarApi.unselect(); // clear date selection
   }
+
+  /**
+   * When clicked on any event.
+   * @param clickInfo event
+   */
   handleEventClick(clickInfo: EventClickArg) {
-    this.modalService.open(ModalComponent);
-    // if (
-    //   confirm(
-    //     `Are you sure you want to delete the event '${clickInfo.event.title}'`
-    //   )
-    // ) {
-    //   clickInfo.event.remove();
-    // }
+    const ref = this.offCanvasService.open(ManageEventComponent, {
+      position: 'end',
+    });
+    ref.componentInstance.id = clickInfo.event.id;
+    ref.dismissed.subscribe({
+      next: () => {
+        this.calendarOptions.events = getEvents();
+        this.cdr.detectChanges();
+      },
+    });
   }
 
-  handleEvents(events: EventApi[]) {
-    this.currentEvents = events;
-    this.cdr.detectChanges();
+  // handleEvents(events: EventApi[]) {
+  //   // this.currentEvents = events;
+  //   // this.cdr.detectChanges();
+  // }
+
+  /**
+   * Format Date according to dateTimeLocal format.
+   * Example of formatted date: 2024-06-08T04:23
+   */
+  formatDateTime(calendarDate: Date) {
+    return calendarDate.toISOString().slice(0, 21);
   }
 }

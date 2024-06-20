@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between">
     <h5 class="card-title m-0 p-0 mb-3">All Event List</h5>
-    <button class="btn btn-sm theme-color-button" (click)="addEvent()">
-        <i class="bi bi-plus-lg"></i>
+    <button class="btn theme-color-button" (click)="addEvent()">
+        <i class="bi bi-calendar2-plus-fill me-1"></i>
         Add Event
     </button>
 </div>
@@ -26,7 +26,9 @@
                 <tr>
 
                     <th scope="row">{{ item.id }}</th>
-                    <td>{{ item.image }}</td>
+                    <td>
+                        <img src="{{ item.image }}" class="profile-image" alt="Image not found" />
+                    </td>
                     <td>{{ item.title }}</td>
                     <td>{{ item.description }}</td>
                     <td>{{ item.timing.startDateTime| date : 'medium' }}</td>
@@ -35,7 +37,7 @@
                         <i class="bi bi-geo-alt-fill"></i>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-info">
+                        <button class="btn btn-outline-info" (click)="viewEventDetails(item)">
                             View
                         </button>
                     </td>
@@ -44,5 +46,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- End small tables -->

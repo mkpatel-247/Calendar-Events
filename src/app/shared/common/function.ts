@@ -1,4 +1,4 @@
-import { EVENT } from "../constant/keys.constant";
+import { EVENT } from '../constant/keys.constant';
 
 /**
  * Get data from localStorage.
@@ -26,6 +26,26 @@ export function setLocalStorage(key: string, value: any) {
 export function getEvents() {
   const allEvents = getLocalStorage(EVENT);
   return allEvents.map((e: any) => {
-    return { id: e.id, title: e.title, start: e.timing.startDateTime, end: e.timing.endDateTime }
-  })
+    return {
+      id: e.id,
+      title: e.title,
+      start: e.timing.startDateTime,
+      end: e.timing.endDateTime,
+    };
+  });
+}
+
+/**
+ * Fetch the index location from event list.
+ * @param eventId Unique ID of event.
+ * @returns index location.
+ */
+export function findEventIndex(eventId: number) {
+  const index = getLocalStorage(EVENT).findIndex((element: any) => {
+    return element.id == eventId;
+  });
+  const object = getLocalStorage(EVENT).find((element: any) => {
+    return element.id == eventId;
+  });
+  return { object: object, index: index };
 }

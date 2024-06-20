@@ -6,11 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  NgbActiveModal,
-  NgbModule,
-  NgbOffcanvas,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import {
   FormBuilder,
   FormControl,
@@ -19,6 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {
+  findEventIndex,
   getLocalStorage,
   setLocalStorage,
 } from 'src/app/shared/common/function';
@@ -37,25 +34,35 @@ export class ManageEventComponent implements OnInit {
   allEvent: any = '';
   isSubmitted: boolean = false;
 
-  @Input() data = '';
+  @Input() id = 0;
+  @Input() editObject: any = '';
   @Input() date: any = '';
+  profileImage: string | ArrayBuffer | undefined | null;
+
   ngOnInit(): void {
     this.initializeEventForm();
 
+    if (this.id) {
+      this.editObject = findEventIndex(this.id);
+      this.eventForm.patchValue(this.editObject.object);
+      this.profileImage = this.editObject.object.image;
+      console.log('iausgduig');
+    }
     if (this.date) {
+      console.log('Formatted Date: ', this.date);
+
       this.eventForm.get('timing')?.get('startDateTime')?.setValue(this.date);
-      // console.log(this.eventForm.get('timing')?.get('startDateTime').value);
     }
     //Get event object from localStorage.
     this.allEvent = getLocalStorage(EVENT);
   }
 
   constructor(
-    public modal: NgbActiveModal,
     private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
     public offcanvas: NgbOffcanvas,
-    private cdr: ChangeDetectorRef
-  ) { }
+    public modal: NgbModal
+  ) {}
 
   /**
    * Create Event Form controls
@@ -84,22 +91,19 @@ export class ManageEventComponent implements OnInit {
     return this.eventForm.controls;
   }
 
+  /**
+   * Convert the normal Image path to Base64.
+   * @param event date of image field
+   */
   onFileChange(event: any) {
-    const file = event.target.files[0];
-    console.log(event.target.files);
-
-    if (file) {
-      const reader = new FileReader();
-      // this.cdr.detach();
-      reader.onload = (e: any) => {
-        const imageBase64 = e.target?.result as string;
-        console.log(imageBase64);
-        this.eventForm.value.image = imageBase64;
-        // this.eventForm.patchValue({ image: imageBase64 });
-        // localStorage.setItem('uploadedImage', imageBase64);
-        // this.cdr.markForCheck();
+    if (event.target.files[0].size > 2097152) {
+      alert('File is too big!');
+    } else {
+      let reader = new FileReader();
+      reader.onload = () => {
+        this.profileImage = reader.result;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(event.target.files[0]);
     }
   }
 
@@ -109,15 +113,24 @@ export class ManageEventComponent implements OnInit {
   onSubmitEventForm() {
     const value = this.eventForm.value;
     if (this.eventForm.valid) {
-      //Store unique key and update value on id field
-      value.id = this.generateUniqueEventId();
-
-      this.allEvent.push(value);
+      if (this.id) {
+        value.image = this.profileImage;
+        this.allEvent[this.editObject.index] = value;
+      } else {
+        //Store unique key and update value on id field
+        value.id = this.generateUniqueEventId();
+        value.image = this.profileImage;
+        this.allEvent.push(value);
+      }
       //Set into localStorage.
       setLocalStorage(EVENT, this.allEvent);
-      this.modal.close();
+      this.profileImage = '';
+      this.eventForm.reset();
+      //Close component.
+      this.id ? this.offcanvas.dismiss() : this.modal.dismissAll();
+    } else {
+      this.isSubmitted = true;
     }
-    this.isSubmitted = true;
     this.cdr.detectChanges();
   }
 

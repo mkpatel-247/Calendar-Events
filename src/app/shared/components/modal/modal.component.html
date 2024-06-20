@@ -1,23 +1,41 @@
-<ng-template #content let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+<!-- <div class="modal-header">
+    <h5 class="modal-title" id="modal-basic-title"> modalHeader </h5>
+</div>
+<div class="modal-body"> -->
+<div class="card mb-0 p-2 rounded-3">
+    <div class="card-header d-flex justify-content-between">
+        <div>
+            <h5 class="fw-bolder">
+                Event Detail
+            </h5>
+        </div>
+        <div>
+            <button type="button" class="btn btn-outline-secondary" (click)="modalService.dismissAll()">Save</button>
+        </div>
     </div>
-    <div class="modal-body">
-        <form>
-            <div class="mb-3">
-                <label for="dateOfBirth">Date of birth</label>
-
-            </div>
-        </form>
+    <img src="{{ eventDetails.image }}" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title pb-0">
+            {{ eventDetails.title }}
+        </h5>
+        <p class="card-text">
+            {{eventDetails.description}}
+        </p>
+        <h5>
+            {{eventDetails.address['area']}}, {{eventDetails.address['city']}}
+        </h5>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Save click')">Save</button>
+    <div class="card-footer d-flex justify-content-lg-start">
+        <h6>
+            <i class="bi bi-time"></i>
+            {{ eventDetails.timing.startDateTime|date:'short' }} -
+            {{eventDetails.timing.endDateTime|date:'short'}}
+        </h6>
     </div>
-</ng-template>
+</div>
+<!-- </div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modalService.dismissAll()">Save</button>
+</div> -->
 
-<button class="btn btn-lg btn-outline-primary" (click)="open(content)">Launch demo modal</button>
-
-<hr />
-
-<pre>{{ closeResult }}</pre>
+<!-- <button class="btn btn-lg btn-outline-primary" (click)="modalService.dismissAll()">Launch demo modal</button> -->
