@@ -11,20 +11,21 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import {
   CalendarOptions,
   DateSelectArg,
-  EventApi,
   EventClickArg,
-  formatDate,
 } from '@fullcalendar/core';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { ManageEventComponent } from '../manage-event/manage-event.component';
-import { findObjectNIndex, formatDateTime, getEvents } from 'src/app/shared/common/function';
-import { NgbModal, NgbModule, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import {
+  findObjectNIndex,
+  formatDateTime,
+  getEvents,
+} from 'src/app/shared/common/function';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonService } from 'src/app/shared/services/common.service';
 import { Subscription } from 'rxjs';
-import { L } from '@fullcalendar/list/internal-common';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
 @Component({
@@ -38,8 +39,7 @@ import { ModalComponent } from 'src/app/shared/components/modal/modal.component'
 export class CalendarViewComponent implements OnInit, OnDestroy {
   //Modal for Add Event.
   private modalService = inject(NgbModal);
-  //Modal of Edit Event.
-  private offCanvasService = inject(NgbOffcanvas);
+
   //Store all subscribe of this component.
   subscribed: Subscription[] = [];
 
@@ -49,7 +49,7 @@ export class CalendarViewComponent implements OnInit, OnDestroy {
       next: () => {
         this.calendarOptions.events = getEvents();
         this.cdr.detectChanges();
-      }
+      },
     });
     this.subscribed.push(sub);
   }
@@ -58,10 +58,10 @@ export class CalendarViewComponent implements OnInit, OnDestroy {
     // Unsubscribe all the subscription.
     this.subscribed.forEach((element: Subscription) => {
       return element.unsubscribe();
-    })
+    });
   }
 
-  constructor(private cdr: ChangeDetectorRef, private common: CommonService) { }
+  constructor(private cdr: ChangeDetectorRef, private common: CommonService) {}
 
   /**
    * FullCalendar Plugin setup.
@@ -69,10 +69,11 @@ export class CalendarViewComponent implements OnInit, OnDestroy {
   calendarOptions: CalendarOptions = {
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     headerToolbar: {
-      left: 'prev,next today',
+      left: 'prev,today,next',
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
     },
+    aspectRatio: 2.8,
     initialView: 'dayGridMonth',
     eventColor: '#4154f1',
     timeZone: 'UTC',
@@ -99,8 +100,10 @@ export class CalendarViewComponent implements OnInit, OnDestroy {
    */
   handleEventClick(clickInfo: EventClickArg) {
     const ID = Number(clickInfo.event.id);
-    const viewModalRef = this.modalService.open(ModalComponent, { size: 'md', centered: true });
+    const viewModalRef = this.modalService.open(ModalComponent, {
+      size: 'lg',
+      centered: true,
+    });
     viewModalRef.componentInstance.eventDetails = findObjectNIndex(ID).object;
   }
-
 }

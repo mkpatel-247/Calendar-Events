@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -48,8 +47,8 @@ export class ManageEventComponent implements OnInit {
 
     if (this.id) {
       this.editObject = findObjectNIndex(this.id);
-      this.eventForm.patchValue(this.editObject.object);
       this.profileImage = this.editObject.object.image;
+      this.eventForm.patchValue(this.editObject.object);
     }
     if (this.date) {
       this.eventForm.get('timing')?.get('start')?.setValue(this.date);
@@ -64,7 +63,7 @@ export class ManageEventComponent implements OnInit {
     public offcanvas: NgbOffcanvas,
     public modal: NgbModal,
     private common: CommonService
-  ) { }
+  ) {}
 
   /**
    * Create Event Form controls
@@ -74,10 +73,13 @@ export class ManageEventComponent implements OnInit {
       id: new FormControl(''), //Hidden field
       title: new FormControl('', [Validators.required]),
       description: new FormControl('', [Validators.required]),
-      timing: new FormGroup({
-        start: new FormControl('', [Validators.required]),
-        end: new FormControl('', [Validators.required]),
-      }, { validators: dateRangeValidator('start', 'end') }),
+      timing: new FormGroup(
+        {
+          start: new FormControl('', [Validators.required]),
+          end: new FormControl('', [Validators.required]),
+        },
+        { validators: dateRangeValidator('start', 'end') }
+      ),
       address: new FormGroup({
         city: new FormControl('', [Validators.required]),
         area: new FormControl('', [Validators.required]),
@@ -98,15 +100,11 @@ export class ManageEventComponent implements OnInit {
    * @param event date of image field
    */
   onFileChange(event: any) {
-    if (event.target.files[0].size > 2097152) {
-      alert('File is too big!');
-    } else {
-      let reader = new FileReader();
-      reader.onload = () => {
-        this.profileImage = reader.result;
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    }
+    let reader = new FileReader();
+    reader.onload = () => {
+      this.profileImage = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
   }
 
   /**
@@ -114,19 +112,17 @@ export class ManageEventComponent implements OnInit {
    */
   onSubmitEventForm() {
     const value = this.eventForm.value;
+    value.image = this.profileImage;
     if (this.eventForm.valid) {
       if (this.id) {
-        value.image = this.profileImage;
-        this.allEvent[this.editObject.index] = value;
+        this.allEvent[this.editObject.index] = value; //Update edited event.
       } else {
         value.id = this.generateUniqueEventId(); //Generate unique ID.
-        value.image = this.profileImage;
-        this.allEvent.push(value);
+        this.allEvent.push(value); //Add new event.
       }
-      //Set into localStorage.
-      setLocalStorage(EVENT, this.allEvent);
-      //Emit subject
-      this.common.updateEvent$.next(this.allEvent);
+      setLocalStorage(EVENT, this.allEvent); //Set into localStorage.
+      this.common.updateEvent$.next(this.allEvent); //Emit subject
+      //Make Form variable empty.
       this.profileImage = '';
       this.eventForm.reset();
       //Close component.

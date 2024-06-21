@@ -1,10 +1,11 @@
 <div class="card mb-0 shadow-none">
     <div class="card-header d-flex justify-content-between mb-0">
         <h4 class="fw-bolder mb-0">{{id ? 'Update' : 'Add'}} Event</h4>
-        <button type="button" class="btn-close" aria-label="Close"
-            (click)="id ? offcanvas.dismiss() : modal.dismissAll()"></button>
+        <button type="button" class="btn btn-sm btn-outline-danger bi bi-x-lg" aria-label="Close"
+            (click)="id ? offcanvas.dismiss() : modal.dismissAll()">
+        </button>
     </div>
-    <div class="card-body">
+    <div class="card-body" [ngClass]="{'offcanvas-body custom-scrollbar': id}">
         <form class="row g-2" [formGroup]="eventForm" (ngSubmit)="onSubmitEventForm()">
             <!-- Hidden Id -->
             <input type="hidden" name="id" formControlName="id">
@@ -121,7 +122,7 @@
                 <img [src]="profileImage" class="profile-image me-2" alt="">
                 <label for="selectedProfileImage">Selected Image</label>
             </div>
-
+            <!-- Button -->
             <div class="text-center d-md-flex justify-content-md-center mt-3">
                 <button type="submit" class="btn {{ id ? 'btn-outline-warning': 'theme-color-button'}}">
                     {{ id ? 'Update Event' : 'Add Event' }}

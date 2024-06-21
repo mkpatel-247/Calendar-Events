@@ -50,9 +50,9 @@ export function findObjectNIndex(eventId: number) {
 }
 
 /**
-   * Format Date according to dateTimeLocal format.
-   * Example of formatted date: 2024-06-08T04:23
-   */
+ * Format Date according to dateTimeLocal format.
+ * Example of formatted date: 2024-06-08T04:23
+ */
 export function formatDateTime(calendarDate: Date) {
   return calendarDate.toISOString().slice(0, 21);
 }

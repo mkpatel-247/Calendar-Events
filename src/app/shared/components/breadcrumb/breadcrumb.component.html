@@ -1,9 +1,12 @@
 <div class="pagetitle">
-    <h1>Dashboard</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
-        </ol>
-    </nav>
+    <ng-container *ngIf="common.breadCrumb$ | async as data">
+        <h1>{{ data.value[0].pageTitle }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <ng-container *ngFor="let item of data.value[0].linkList; last as isLast">
+                    <li class="breadcrumb-item" [ngClass]="{'active': isLast}"><a>{{item.label}}</a></li>
+                </ng-container>
+            </ol>
+        </nav>
+    </ng-container>
 </div>

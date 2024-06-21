@@ -1,18 +1,24 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { getLocalStorage } from '../common/function';
-import { EVENT } from '../constant/keys.constant';
 import { BehaviorSubject } from 'rxjs';
+import { ModalComponent } from '../components/modal/modal.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CommonService {
+  //Breadcrumb Data
+  breadCrumb$ = new BehaviorSubject<any>([]);
 
+  //Indicate any changes in event list
   updateEvent$ = new BehaviorSubject('');
 
   private render!: Renderer2;
   private body!: HTMLElement;
-  constructor(private renderFactory: RendererFactory2) {
+  constructor(
+    private renderFactory: RendererFactory2,
+    private modalService: NgbModal
+  ) {
     this.render = renderFactory.createRenderer(null, null);
     this.body = this.render.selectRootElement('body', true); //Safe way to select body tag.
   }

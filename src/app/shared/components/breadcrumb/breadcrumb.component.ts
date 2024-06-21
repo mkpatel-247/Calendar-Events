@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CommonService } from '../../services/common.service';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -8,4 +9,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
 })
-export class BreadcrumbComponent {}
+export class BreadcrumbComponent {
+  constructor(public common: CommonService) {}
+}
